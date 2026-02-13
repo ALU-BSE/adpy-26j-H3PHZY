@@ -1,11 +1,14 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import RedirectView
 from rest_framework.routers import DefaultRouter
 from core.views import HealthCheckView, APIRootView
 
 router = DefaultRouter()
 
 urlpatterns = [
+    # Redirect root to the API root for convenience
+    path("", RedirectView.as_view(url='/api/', permanent=False)),
     path("admin/", admin.site.urls),
     
     # Health and status
