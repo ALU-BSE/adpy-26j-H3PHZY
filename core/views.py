@@ -123,3 +123,40 @@ class AgentOnboardingView(generics.CreateAPIView):
             **response_serializer.data,
             "message": "Agent registered successfully. Please await verification."
         }, status=status.HTTP_201_CREATED)
+
+
+# --- JWT auth views (custom token claims + logout blacklist + rate limit) ---
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.permissions import AllowAny
+from rest_framework.views import APIView
+from rest_framework.throttling import AnonRateThrottle
+from .serializers import CustomTokenObtainPairSerializer
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    """Issue JWT tokens and include custom claims. Rate-limited by 'login' scope."""
+    serializer_class = CustomTokenObtainPairSerializer
+    permission_classes = [AllowAny]
+    throttle_classes = [AnonRateThrottle]
+    throttle_scope = 'login'
+
+
+class LogoutView(APIView):
+    """Blacklist refresh token on logout to invalidate it.
+
+    This view allows unauthenticated clients to send a refresh token to be
+    blacklisted (useful for mobile logout where only a refresh token is held).
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        refresh_token = request.data.get('refresh')
+        if not refresh_token:
+            return Response({'detail': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
