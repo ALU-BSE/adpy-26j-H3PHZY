@@ -159,6 +159,7 @@ REST_FRAMEWORK = {
     # Rate limiting for sensitive endpoints (login uses scope 'login')
     'DEFAULT_THROTTLE_RATES': {
         'login': '5/min',
+        'anon': '100/hour',
     },
 }
 
