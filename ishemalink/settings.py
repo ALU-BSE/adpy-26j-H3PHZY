@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "core",
     "domestic",
     "international",
+    "audit",
     "billing",
 ]
 
@@ -60,6 +61,8 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Glass log middleware (audit sensitive GETs)
+    "audit.middleware.GlassLogMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
