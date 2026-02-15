@@ -36,10 +36,12 @@ class InternationalShipment(models.Model):
     weight_kg = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
     
-    # Customs documentation
-    sender_tin = models.CharField(max_length=11, help_text="Rwanda TIN for sender")
+    # Customs documentation (store TINs encrypted at rest)
+    from core.fields import EncryptedTextField
+
+    sender_tin = EncryptedTextField(help_text="Rwanda TIN for sender")
     recipient_passport = models.CharField(max_length=20, blank=True)
-    recipient_tin = models.CharField(max_length=11, blank=True)
+    recipient_tin = EncryptedTextField(blank=True)
     
     hs_code = models.CharField(max_length=20, blank=True, help_text="Harmonized System Code")
     customs_value = models.DecimalField(max_digits=12, decimal_places=2)

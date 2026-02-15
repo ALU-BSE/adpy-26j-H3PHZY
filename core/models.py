@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
+from .fields import EncryptedTextField
 
 class User(AbstractUser):
     """Custom user model with Rwanda context"""
@@ -22,18 +23,12 @@ class User(AbstractUser):
             )
         ]
     )
-    national_id = models.CharField(
-        max_length=16,
+    # Store NID encrypted at rest. Value is decrypted when accessed.
+    national_id = EncryptedTextField(
         unique=True,
         blank=True,
         null=True,
-        validators=[
-            RegexValidator(
-                regex=r'^[1-9]\d{15}$',
-                message='NID must be 16 digits starting with 1-9',
-                code='invalid_nid'
-            )
-        ]
+        help_text='Encrypted Rwanda National ID (16 digits)'
     )
     assigned_sector = models.CharField(max_length=255, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
