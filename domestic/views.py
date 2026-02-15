@@ -11,6 +11,15 @@ from .serializers import (
 )
 
 
+def _deny_if_unverified(request):
+    """Return a 403 Response if the requesting user is not verified."""
+    if not getattr(request, 'user', None):
+        return None
+    if not getattr(request.user, 'is_verified', False):
+        return Response({'detail': 'User account is not verified.'}, status=status.HTTP_403_FORBIDDEN)
+    return None
+
+
 class ShipmentListCreateView(generics.ListCreateAPIView):
     """List and create shipments"""
     queryset = Shipment.objects.all()
@@ -30,6 +39,12 @@ class ShipmentListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         serializer.save(sender=self.request.user)
 
+    def dispatch(self, request, *args, **kwargs):
+        resp = _deny_if_unverified(request)
+        if resp:
+            return resp
+        return super().dispatch(request, *args, **kwargs)
+
 
 class ShipmentDetailView(generics.RetrieveUpdateAPIView):
     """Retrieve and update shipment details"""
@@ -38,11 +53,23 @@ class ShipmentDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
     lookup_field = 'tracking_number'
 
+    def dispatch(self, request, *args, **kwargs):
+        resp = _deny_if_unverified(request)
+        if resp:
+            return resp
+        return super().dispatch(request, *args, **kwargs)
+
 
 class ShipmentTrackingView(generics.GenericAPIView):
     """Get full tracking history"""
     permission_classes = [IsAuthenticated]
     
+    def dispatch(self, request, *args, **kwargs):
+        resp = _deny_if_unverified(request)
+        if resp:
+            return resp
+        return super().dispatch(request, *args, **kwargs)
+
     def get(self, request, tracking_number):
         try:
             shipment = Shipment.objects.get(tracking_number=tracking_number)
@@ -78,6 +105,12 @@ class ShipmentStatusUpdateView(generics.GenericAPIView):
     serializer_class = ShipmentStatusUpdateSerializer
     permission_classes = [IsAuthenticated]
     
+    def dispatch(self, request, *args, **kwargs):
+        resp = _deny_if_unverified(request)
+        if resp:
+            return resp
+        return super().dispatch(request, *args, **kwargs)
+
     def post(self, request, tracking_number):
         try:
             shipment = Shipment.objects.get(tracking_number=tracking_number)
@@ -123,6 +156,12 @@ class ShipmentBatchUpdateView(generics.GenericAPIView):
     """Update multiple shipments at once"""
     permission_classes = [IsAuthenticated]
     
+    def dispatch(self, request, *args, **kwargs):
+        resp = _deny_if_unverified(request)
+        if resp:
+            return resp
+        return super().dispatch(request, *args, **kwargs)
+
     def post(self, request):
         """
         Expect JSON like:
