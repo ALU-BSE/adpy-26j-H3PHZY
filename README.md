@@ -89,7 +89,11 @@ ishemalink/
 - Python 3.10+
 - Django 6.0+
 - PostgreSQL (recommended) or SQLite
+- **Redis** (for Celery tasks) or configure `CELERY_BROKER_URL`/`CELERY_RESULT_BACKEND` in `.env`
 
+> The project defaults to `redis://localhost:6379/0` for Celery, so start a Redis daemon or
+> supply an alternative broker URL in your environment before running asynchronous
+> workers.
 ### Local Development
 
 1. **Clone Repository**

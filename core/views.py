@@ -102,18 +102,18 @@ class AgentOnboardingView(generics.CreateAPIView):
     permission_classes = [AllowAny]
     
     def create(self, request, *args, **kwargs):
-        # Ensure agent registration
-        request.data._mutable = True if hasattr(request.data, '_mutable') else False
-        request.data['user_type'] = 'AGENT'
-        
+        # copy payload to avoid mutating original (works with JSON too)
+        data = request.data.copy()
+        data['user_type'] = 'AGENT'
+
         # NID is required for agents
-        if not request.data.get('national_id'):
+        if not data.get('national_id'):
             return Response(
                 {"error": "National ID is required for agent onboarding"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
-        serializer = self.get_serializer(data=request.data)
+
+        serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         

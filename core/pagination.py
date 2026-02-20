@@ -9,6 +9,7 @@ class MetaDataPagination(PageNumberPagination):
     `?page`/`?size` query params.
     """
 
+    page_size = 20
     page_size_query_param = 'size'
 
     def get_paginated_response(self, data):
