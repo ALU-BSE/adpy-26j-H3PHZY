@@ -150,7 +150,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # Pagination configuration (custom class defined in core/pagination.py)
+    'DEFAULT_PAGINATION_CLASS': 'core.pagination.MetaDataPagination',
     'PAGE_SIZE': 20,
     'DEFAULT_FILTER_BACKENDS': [
         'rest_framework.filters.SearchFilter',
@@ -187,6 +188,10 @@ CACHES = {
         }
     }
 }
+
+# Celery configuration
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [

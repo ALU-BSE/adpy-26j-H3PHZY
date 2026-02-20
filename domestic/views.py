@@ -180,32 +180,13 @@ class ShipmentBatchUpdateView(generics.GenericAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        # Process updates asynchronously (simulated)
-        processed = 0
-        failed = 0
-        
-        for update in updates:
-            try:
-                shipment = Shipment.objects.get(tracking_number=update['tracking_number'])
-                shipment.status = update.get('status', shipment.status)
-                shipment.save()
-                
-                ShipmentLog.objects.create(
-                    shipment=shipment,
-                    status=shipment.status,
-                    notes=update.get('notes', ''),
-                    logged_by=request.user
-                )
-                
-                processed += 1
-            except Exception as e:
-                failed += 1
-                print(f"Error updating {update.get('tracking_number')}: {str(e)}")
-        
+        # enqueue the work; user id used for log attribution
+        from .tasks import process_batch_updates
+        task = process_batch_updates.delay(updates, request.user.id)
+
         return Response({
-            'message': f'Batch update completed',
-            'processed': processed,
-            'failed': failed,
+            'message': 'Batch update queued',
             'total': len(updates),
+            'task_id': task.id,
             'status': 'queued'
         })

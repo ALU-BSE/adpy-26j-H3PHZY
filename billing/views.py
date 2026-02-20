@@ -18,11 +18,12 @@ class TariffListView(generics.ListAPIView):
         cached_data = cache.get(cache_key)
         
         if cached_data:
+            # on a cache hit send header
             return Response({
                 'cached': True,
                 'cached_at': cached_data['cached_at'],
                 'tariffs': cached_data['tariffs']
-            })
+            }, headers={'X-Cache-Hit': 'TRUE'})
         
         # Get from database
         tariffs = self.get_queryset()

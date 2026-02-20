@@ -80,12 +80,11 @@ class NIDBatchVerificationView(generics.GenericAPIView):
         
         nid = serializer.validated_data['nid']
         is_valid, message = validate_rwanda_nid(nid)
-        
-        return Response({
-            "nid": nid,
-            "valid": is_valid,
-            "message": message
-        })
+
+        payload = {"nid": nid, "valid": is_valid}
+        if not is_valid:
+            payload["error"] = message
+        return Response(payload)
 
 
 class UserProfileView(generics.RetrieveUpdateAPIView):

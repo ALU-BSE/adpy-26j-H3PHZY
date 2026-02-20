@@ -106,6 +106,7 @@ class NIDBatchVerificationTests(TestCase):
         
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertFalse(response.data['valid'])
+        self.assertIn('error', response.data)
     
     def test_short_nid_verification(self):
         """Test verification of too short NID"""
