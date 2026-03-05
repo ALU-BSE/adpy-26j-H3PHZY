@@ -5,3 +5,5 @@ django-filter
 python-dotenv
 celery
 redis
+djangorestframework-simplejwt
+cryptography

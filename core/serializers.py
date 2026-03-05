@@ -67,3 +67,16 @@ class NIDBatchVerificationSerializer(serializers.Serializer):
         if not is_valid:
             raise serializers.ValidationError(message)
         return value
+
+
+# JWT Custom serializer to include `user_type` claim
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # Add custom claim
+        token['user_type'] = getattr(user, 'user_type', None)
+        return token

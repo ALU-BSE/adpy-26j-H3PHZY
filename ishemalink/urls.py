@@ -20,4 +20,6 @@ urlpatterns = [
     path("api/shipments/", include("domestic.urls")),
     path("api/international/", include("international.urls")),
     path("api/pricing/", include("billing.urls")),
+    path("api/identity/", include("identity.urls")),
+    path("api/privacy/", include("privacy.urls")),
 ]
