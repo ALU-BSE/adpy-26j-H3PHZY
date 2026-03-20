@@ -1,0 +1,32 @@
+# Core Django
+Django>=4.2
+djangorestframework
+django-cors-headers
+django-filter
+
+# Configuration
+python-decouple
+
+# Database
+psycopg2-binary
+dj-database-url
+
+# Async Task Queue
+celery
+redis
+django-celery-results
+django-celery-beat
+
+# API Documentation
+drf-spectacular
+
+# Production server
+gunicorn
+
+# Monitoring
+django-prometheus
+
+# Utility
+python-dotenv
+lxml
+cryptography
